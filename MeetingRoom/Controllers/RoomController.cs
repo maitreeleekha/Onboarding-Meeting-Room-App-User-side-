@@ -32,7 +32,7 @@ namespace MeetingRoom.Controllers
                 return rooms_objs.Where(item => item.Status == "N").ToArray();
             }
 
-            return rooms_objs.Where(item =>  item.roomId == roomId && item.Status == "N" ).ToArray();
+            return rooms_objs.Where(item =>  (item.roomId == roomId && item.Status == "N") ).ToArray();
 
         }
     }

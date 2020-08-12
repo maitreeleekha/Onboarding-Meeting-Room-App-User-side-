@@ -16,21 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_redux_1 = require("react-redux");
 var RoomsBookingsStore = require("../store/Rooms");
-//const LayoutForm = (props) => {
-//  //  <input type="checkbox" id={item} name={item} value={item} />
-//  //      <label for={item}>{item}</label>
-//    console.log(props.options.length)
-//    return (
-//        <div className="container">
-//            Layout options
-//            {props.options.map((item) => {                
-//                <h2>
-//                    {item}
-//                </h2>               
-//            })}                   
-//        </div>
-//        );
-//}
+require("./static/Room.css");
 var AdditionalReqForm = function (props) {
     var layoutOptions = [];
     if (props.type == "A") {
@@ -59,18 +45,18 @@ var AdditionalReqForm = function (props) {
         // booking id:
         var bookingid = props.date.split('-').join('') + props.time.split('-').join('').split(':').join('');
         //create post request here!
-        window.open("/bookingconfirmed/user:53231/" + bookingid + "/" + props.room + "/" + props.date + "/" + props.time + "/" + final_layout + "/" + final_req, '_self');
+        props.history.push("/bookingconfirmed/user" + props.userid + "/" + bookingid + "/" + props.room + "/" + props.date + "/" + props.time + "/" + final_layout + "/" + final_req, '_self');
     };
     return (React.createElement(React.Fragment, null,
         React.createElement("br", null),
-        React.createElement("form", { className: "form-group", onSubmit: handleSubmit },
+        React.createElement("form", { className: "form-group additionalform", onSubmit: handleSubmit },
             "Please specify the layout for the room, and we will get it all set for you! You can select one from the following options:",
             React.createElement("br", null),
             React.createElement("h3", null, "Layout options:"),
             React.createElement("br", null),
             layoutOptions.map(function (item) {
-                return React.createElement("div", null,
-                    React.createElement("input", { key: item, type: "radio", id: item, name: "layoutoption", value: item, checked: true }),
+                return React.createElement("div", { key: item },
+                    React.createElement("input", { type: "radio", id: item, name: "layoutoption", value: item, required: true }),
                     React.createElement("label", null,
                         " ",
                         item));
@@ -102,10 +88,12 @@ var BookRoom = /** @class */ (function (_super) {
         _this.roomParam = '';
         _this.timeParam = '';
         _this.typeParam = '';
+        _this.userParam = '';
         _this.dateParam = props.match.params.date;
         _this.roomParam = props.match.params.room;
         _this.timeParam = props.match.params.time;
         _this.typeParam = props.match.params.type;
+        _this.userParam = props.match.params.user;
         return _this;
     }
     BookRoom.prototype.componentDidMount = function () {
@@ -161,11 +149,15 @@ var BookRoom = /** @class */ (function (_super) {
         // VALIDATE INCOMING PARAMS
         if (today > this.dateParam) {
             // cannot search for past dates. route to error page
-            window.open('/index', '_self');
+            window.open('/index/user:52321', '_self');
+            //window.open('/index/user:52321', '_self');
         }
         if (this.checkDateFormat() &&
             this.checkTimeFormat() &&
             this.props.numRooms == 1 &&
+            this.props.rooms.length == 1 &&
+            this.props.rooms[0]["roomType"].localeCompare(this.typeParam) == 0 &&
+            this.userParam.slice(1) == sessionStorage.getItem("userid") &&
             this.props.bookings.filter(function (item) { return _this.checkAlreadyBooked(item); }).length == 0 &&
             this.props.numBookings != -1) {
             return (React.createElement(React.Fragment, null,
@@ -177,12 +169,15 @@ var BookRoom = /** @class */ (function (_super) {
                     this.dateParam,
                     ", ",
                     this.timeParam),
-                React.createElement(AdditionalReqForm, { type: this.typeParam, room: this.roomParam, date: this.dateParam, time: this.timeParam })));
+                React.createElement(AdditionalReqForm, { type: this.typeParam, room: this.roomParam, date: this.dateParam, time: this.timeParam, history: this.props.history, userid: this.userParam })));
         }
         else if (this.props.numBookings == -1) {
             return (React.createElement(React.Fragment, null, "Loading..."));
         }
         else {
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
             window.open('./notfound', '_self');
             return (React.createElement(React.Fragment, null));
         }

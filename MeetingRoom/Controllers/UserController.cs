@@ -14,18 +14,20 @@ namespace MeetingRoom.Controllers
 
         public IEnumerable<UserObject> Get(string userid)
         {
-            UserObject u1 = new UserObject { userId = "52321", userName = "Maitree Leekha", emailId = "maitreeleekha@yahoo.in" };
+            UserObject u1 = new UserObject { userId = "53231", userName = "Maitree Leekha", emailId = "maitreeleekha@yahoo.in" };
             UserObject u2 = new UserObject { userId = "67234", userName = "Amit Roy", emailId = "amit@gmail.com" };
             UserObject u3 = new UserObject { userId = "64983", userName = "Mohit Kapoor", emailId = "mohit@gmail.com" };
 
             List<UserObject> users = new List<UserObject> { u1, u2, u3 };
             // 
-            // IEnumerable<UserObject> ans = users.Where(item => item.userId == userid).ToList();
+            if (userid != null)
+            {
+                IEnumerable<UserObject> ans = users.Where(item => item.userId == userid).ToList();
+                return ans;
+            }
 
-            IEnumerable<UserObject> ans =  new List<UserObject> { new UserObject { userId = userid, userName = "test new", emailId = "testemail" } };
 
-                // 
-            return ans;
+            return users;
         }
     }
 

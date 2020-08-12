@@ -25,7 +25,7 @@ var EditBooking = /** @class */ (function (_super) {
             event.preventDefault();
             // initiate a post request
             alert("Your request has been submitted successfully. We shall reach out to you with an update shortly.");
-            window.open("./", '_self');
+            // window.open(`./`, '_self');
         };
         _this.bookingId = props.match.params.bookingid;
         return _this;

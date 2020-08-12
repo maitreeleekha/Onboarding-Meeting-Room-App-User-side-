@@ -92,7 +92,7 @@ const Room = (props) => {
             }
         }
 
-        window.open(`/bookroom/user:53231/${props.inputDate}/${fromTime}-${toTime}/${props.roomId}/${props.roomType}/confirm`, '_self');
+        props.history.push(`/bookroom/user${props.userid}/${props.inputDate}/${fromTime}-${toTime}/${props.roomId}/${props.roomType}/confirm`, '_self');
         //route to confirmation page where the user chooses a layout, additional equipment before finalizing the booking!
     }
 
@@ -159,12 +159,13 @@ const getDisplayRooms = (rooms: RoomsBookingsStore.Room[], roomID: any) => {
 class Rooms extends React.PureComponent<RoomBookingProps> {
     routeParam = '';
     roomParam = '';
-    
+    userParam = '';
 
     constructor(props) {
         super(props);
         this.routeParam = props.match.params.date;
         this.roomParam = props.match.params.room;
+        this.userParam = props.match.params.user;
     }
 
 
@@ -209,18 +210,32 @@ class Rooms extends React.PureComponent<RoomBookingProps> {
         if (today > this.routeParam) {
             // cannot search for past dates. route to error page
             //alert("Please enter a valid date to check available rooms.")
-            window.open('/index/user:52321', '_self');
-        }       
-        if (this.roomParam && this.props.numRooms == 0) {
-            // the room was deleted from the database.
-            window.open('/notfound', '_self');
+            window.open(`/user${this.userParam}`, '_self');
+            return (
+                <>
+                </>
+                )
         }
-        //VALIDATE USER ENTRY
+
+        //VALIDATE USER ENTRY //// the room was deleted from the database.
+        if (!sessionStorage.getItem("userid") || sessionStorage.getItem("userid") != this.userParam.slice(1) || (this.roomParam && this.props.numRooms == 0)) {
+
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
+
+            window.open('./notfound', '_self');
+            return (
+                <>
+                </>
+                );
+        }
+
 
             return (
                 <>
                     < h1 > Rooms  </ h1 >
-                    {this.props.rooms.map((room: RoomsBookingsStore.Room) => <Room key={room.roomId} {...room} inputDate={this.routeParam} books={this.props.bookings} />)}
+                    {this.props.rooms.map((room: RoomsBookingsStore.Room) => <Room key={room.roomId} {...room} inputDate={this.routeParam} books={this.props.bookings} history={this.props.history} userid={this.userParam} />)}
                 </>
             );
    

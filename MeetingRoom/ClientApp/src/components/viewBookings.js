@@ -39,7 +39,7 @@ var BookingItem = function (props) {
     var show = currentDate < meetingDate;
     var handleBookSubmit = function (event) {
         event.preventDefault();
-        window.open("/meetingrooms/user:53231/" + dateInput + "/" + props.roomId + "/", '_self');
+        props.history.push("/meetingrooms/user:53231/" + dateInput + "/" + props.roomId + "/", '_self');
     };
     return (React.createElement("div", { className: "roomDiv", style: { backgroundColor: show ? '#D9E3F0' : 'light-grey' } },
         React.createElement("div", { className: "roomInfoDiv" },
@@ -61,7 +61,7 @@ var BookingItem = function (props) {
                 event.preventDefault();
                 var editDecision = window.confirm("Are you sure you want to edit this booking?");
                 if (editDecision) {
-                    window.open("/editbooking/" + props.bookingId, '_self');
+                    props.history.push("/editbooking/" + props.bookingId, '_self');
                 }
             } }, " Edit this booking "),
         React.createElement("button", { className: "btn btn-sm btn-primary booking-button", onClick: function (event) {
@@ -86,11 +86,16 @@ var ViewBookings = /** @class */ (function (_super) {
         this.props.requestBookings(this.userParam);
     };
     ViewBookings.prototype.render = function () {
-        var userBookings = [{ bookingId: 'XHSDJ17H', bookingDate: '2020-08-01', meetingDate: '2020-08-17', meetingTime: '11:00-13:30', empId: '53231', roomId: 'ND-B1-A4-09', AdditionalEquipments: [], ActionRequired: '' },
-            { bookingId: 'XIUDU27N', bookingDate: '2020-08-03', meetingDate: '2020-09-08', meetingTime: '14:00-17:30', empId: '53231', roomId: 'HYD-B1-A5-16', AdditionalEquipments: ['Printer'], ActionRequired: '' },
-            { bookingId: 'JSDHD912', bookingDate: '2020-08-03', meetingDate: '2020-08-10', meetingTime: '14:00-17:30', empId: '53231', roomId: 'HYD-B1-A5-16', AdditionalEquipments: ['Printer'], ActionRequired: '' }
-        ];
-        return (React.createElement(React.Fragment, null, this.props.bookings.map(function (booking) { return React.createElement(BookingItem, __assign({ key: booking.bookingId }, booking)); })));
+        var _this = this;
+        console.log(this.userParam.slice(1), this.props.bookings.length);
+        if (this.userParam.slice(1) != sessionStorage.getItem("userid")) {
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
+            window.open('./notfound', '_self');
+            return (React.createElement(React.Fragment, null));
+        }
+        return (React.createElement(React.Fragment, null, this.props.bookings.map(function (booking) { return React.createElement(BookingItem, __assign({ key: booking.bookingId }, booking, { history: _this.props.history })); })));
     };
     return ViewBookings;
 }(React.PureComponent));

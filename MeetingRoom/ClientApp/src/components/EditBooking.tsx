@@ -22,7 +22,7 @@ class EditBooking extends React.PureComponent {
 
 
         alert("Your request has been submitted successfully. We shall reach out to you with an update shortly.");
-        window.open(`./`, '_self');
+        // window.open(`./`, '_self');
 
     }
 

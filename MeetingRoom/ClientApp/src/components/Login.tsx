@@ -5,6 +5,7 @@ import * as UserStore from '../store/User';
 import { RouteComponentProps } from 'react-router';
 import { ApplicationState } from '../store';
 import * as Promise from 'bluebird';
+import { Redirect } from 'react-router-dom'
 
 //react-router-dom...
 // form submisison with react router.
@@ -26,51 +27,76 @@ class Login extends React.PureComponent<UserProps> {
     }
 
     public componentDidMount() {
-        //this.props.requestUser('52321');
+        this.props.requestUser("");
     }
 
     private handleSubmit = (event) => {
         event.preventDefault();
         //console.log(event.target[0].value);
-        this.props.requestUser(event.target[0].value);
+        //this.props.requestUser(event.target[0].value);
         //.then(() => console.log('logger', this.props.loginuser));
-        if (this.props.isLogged && !this.props.userIsLoading) {
-            console.log('logger', this.props.loginuser, this.props.userIsLoading, this.props.isLogged);
+
+        if (this.props.numUsers == -1) {
+            //wait
         }
-       
+
+        else if (this.props.allUsers.filter(item => item.userId == event.target[0].value).length == 0) {
+            //user not registered!
+            alert("Looks like you haven't registered with us yet!")
+            this.props.history.push('./signup')
+        }
+        else if (this.props.allUsers.filter(item => item.userId == event.target[0].value).length == 1) {
+            console.log('LoggedIn Successfullyy');
+            //this.props.setLoggedIn();
+            console.log(this.props);
+            sessionStorage.setItem("loggedin", "true");
+            sessionStorage.setItem("userid", event.target[0].value);
+            sessionStorage.setItem("username", this.props.allUsers.filter(item => item.userId == event.target[0].value)[0].userName);
+            this.props.history.push(`./user:${event.target[0].value}`)
+            
+        }
 
     }
-
-    private ensureUserFetched = (id: string) => new Promise((resolve, reject) => {
-        this.props.requestUser(id);
-
-        
-
-        resolve();
-    });    
+ 
 
     public render() {
-        console.log('logger', this.props.loginuser, this.props.userIsLoading, this.props.isLogged);
+        console.log('logger', this.props.allUsers, this.props.userIsLoading, this.props.isLogged);
 
-    return (
-        <>
-            <h1>Login</h1>
-            <div className="login-body">
-                <h4> Hi! Please Enter your username </h4>
-                <form className="form-group" onSubmit={this.handleSubmit}>
-                <input className="form-control" placeholder="UserID" required  />
-                <br/>
-                <button className="btn-lg btn btn-primary" type="submit">Login</button>
+        if (!sessionStorage.getItem("username")) {
+            return (
 
-                </form>
-                <button className="btn-lg btn btn-light" onClick={(event) => {
-                    event.preventDefault();
-                    window.open('./signup', '_self');
-                }}>SignUp?</button>
-            </div>
-        </>
-        
-        );
+                <>
+                    <h1>Login</h1>
+                    <div className="login-body">
+                        <h4> Hi! Please Enter your username </h4>
+                        <form className="form-group" onSubmit={this.handleSubmit}>
+                            <input className="form-control" placeholder="UserID" required />
+                            <br />
+                            <button className="btn-lg btn btn-primary" type="submit">Login</button>
+
+                        </form>
+                        <button className="btn-lg btn btn-light" onClick={(event) => {
+                            event.preventDefault();
+                            window.open('./signup', '_self');
+                        }}>SignUp?</button>
+                    </div>
+                </>
+
+            );
+        }
+
+        else {
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
+
+            window.open('./login', '_self');
+            return (
+                <>
+                </>
+                
+                )
+        }
      }
 }
 

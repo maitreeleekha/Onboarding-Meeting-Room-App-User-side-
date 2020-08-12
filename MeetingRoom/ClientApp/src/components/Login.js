@@ -17,7 +17,6 @@ var React = require("react");
 var react_redux_1 = require("react-redux");
 require("./static/Room.css");
 var UserStore = require("../store/User");
-var Promise = require("bluebird");
 var Login = /** @class */ (function (_super) {
     __extends(Login, _super);
     //validate incoming URL.
@@ -26,35 +25,54 @@ var Login = /** @class */ (function (_super) {
         _this.handleSubmit = function (event) {
             event.preventDefault();
             //console.log(event.target[0].value);
-            _this.props.requestUser(event.target[0].value);
+            //this.props.requestUser(event.target[0].value);
             //.then(() => console.log('logger', this.props.loginuser));
-            if (_this.props.isLogged && !_this.props.userIsLoading) {
-                console.log('logger', _this.props.loginuser, _this.props.userIsLoading, _this.props.isLogged);
+            if (_this.props.numUsers == -1) {
+                //wait
+            }
+            else if (_this.props.allUsers.filter(function (item) { return item.userId == event.target[0].value; }).length == 0) {
+                //user not registered!
+                alert("Looks like you haven't registered with us yet!");
+                _this.props.history.push('./signup');
+            }
+            else if (_this.props.allUsers.filter(function (item) { return item.userId == event.target[0].value; }).length == 1) {
+                console.log('LoggedIn Successfullyy');
+                //this.props.setLoggedIn();
+                console.log(_this.props);
+                sessionStorage.setItem("loggedin", "true");
+                sessionStorage.setItem("userid", event.target[0].value);
+                sessionStorage.setItem("username", _this.props.allUsers.filter(function (item) { return item.userId == event.target[0].value; })[0].userName);
+                _this.props.history.push("./user:" + event.target[0].value);
             }
         };
-        _this.ensureUserFetched = function (id) { return new Promise(function (resolve, reject) {
-            _this.props.requestUser(id);
-            resolve();
-        }); };
         return _this;
     }
     Login.prototype.componentDidMount = function () {
-        //this.props.requestUser('52321');
+        this.props.requestUser("");
     };
     Login.prototype.render = function () {
-        console.log('logger', this.props.loginuser, this.props.userIsLoading, this.props.isLogged);
-        return (React.createElement(React.Fragment, null,
-            React.createElement("h1", null, "Login"),
-            React.createElement("div", { className: "login-body" },
-                React.createElement("h4", null, " Hi! Please Enter your username "),
-                React.createElement("form", { className: "form-group", onSubmit: this.handleSubmit },
-                    React.createElement("input", { className: "form-control", placeholder: "UserID", required: true }),
-                    React.createElement("br", null),
-                    React.createElement("button", { className: "btn-lg btn btn-primary", type: "submit" }, "Login")),
-                React.createElement("button", { className: "btn-lg btn btn-light", onClick: function (event) {
-                        event.preventDefault();
-                        window.open('./signup', '_self');
-                    } }, "SignUp?"))));
+        console.log('logger', this.props.allUsers, this.props.userIsLoading, this.props.isLogged);
+        if (!sessionStorage.getItem("username")) {
+            return (React.createElement(React.Fragment, null,
+                React.createElement("h1", null, "Login"),
+                React.createElement("div", { className: "login-body" },
+                    React.createElement("h4", null, " Hi! Please Enter your username "),
+                    React.createElement("form", { className: "form-group", onSubmit: this.handleSubmit },
+                        React.createElement("input", { className: "form-control", placeholder: "UserID", required: true }),
+                        React.createElement("br", null),
+                        React.createElement("button", { className: "btn-lg btn btn-primary", type: "submit" }, "Login")),
+                    React.createElement("button", { className: "btn-lg btn btn-light", onClick: function (event) {
+                            event.preventDefault();
+                            window.open('./signup', '_self');
+                        } }, "SignUp?"))));
+        }
+        else {
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
+            window.open('./login', '_self');
+            return (React.createElement(React.Fragment, null));
+        }
     };
     return Login;
 }(React.PureComponent));

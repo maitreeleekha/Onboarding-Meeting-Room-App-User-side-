@@ -4,8 +4,9 @@ import { AppThunkAction } from './';
 // STATE
 export interface UserState {
     userIsLoading: boolean;
-    loginuser: User[];
+    allUsers: User[];
     isLogged: boolean;
+    numUsers: number;
 }
 
 export interface User {
@@ -22,10 +23,14 @@ interface RequestUserAction {
 
 interface ReceiveUserAction {
     type: 'RECEIVE_USER';
-    loginuser: User[];
+    allUsers: User[];
 }
 
-type KnownAction = ReceiveUserAction | RequestUserAction;
+interface SetLoggedInState {
+    type: 'SET_USER_LOGIN_STATE';
+}
+
+type KnownAction = ReceiveUserAction | RequestUserAction | SetLoggedInState;
 
 const unloadedUser: User = {
     userId: '',
@@ -34,7 +39,7 @@ const unloadedUser: User = {
 
 }
 const unloadedState: UserState = {
-    loginuser: [], userIsLoading: false, isLogged: false
+    allUsers: [], userIsLoading: false, isLogged: false, numUsers: -1
 };
 
 
@@ -42,7 +47,7 @@ export const actionCreators = {
     requestUser:  (userid: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appstate = getState();
-        if (appstate && appstate.user) {
+
             fetch(`api/user?userid=${userid}`, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,18 +56,24 @@ export const actionCreators = {
             }).then(response => response.json() as Promise<User[]>)
                 .then(data => {
 
-                    dispatch({ type: 'RECEIVE_USER', loginuser: data });
+                    dispatch({ type: 'RECEIVE_USER', allUsers: data });
                     console.log("[response message]", data)
 
                 });
             dispatch({ type: 'REQUEST_USER' });  
-        }
+        
+    },
+
+    setLoggedIn: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        dispatch({ type: 'REQUEST_USER' })
+        dispatch({ type: 'SET_USER_LOGIN_STATE' });
+       // dispatch({ type: 'REQUEST_USER' })
     }
 }
 
 
 
-export const reducer: Reducer<UserState> = (state: UserState | undefined, incomingAction: Action): UserState => {
+export const reducer: Reducer<UserState> = (state: any, incomingAction: Action) => {
     if (state === undefined) {
         return unloadedState;
     }
@@ -71,18 +82,32 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
     switch (action.type) {
         case 'REQUEST_USER':
             return {
-                loginuser: state.loginuser,
+                ...state,
+                allUsers: state.allUsers,
                 userIsLoading: true,
-                isLogged: true
+                isLogged: state.isLogged,
+                numUsers: state.numUsers
             };
         case 'RECEIVE_USER':
             // Only accept the incoming data if it matches the most recent request. This ensures we correctly
             // handle out-of-order responses.
             return {
-                loginuser: action.loginuser,
+                ...state,
+                allUsers: action.allUsers,
                 userIsLoading: false,
-                isLogged: false
+                isLogged: state.isLogged,
+                numUsers: action.allUsers.length
             };
+
+        case 'SET_USER_LOGIN_STATE':
+            return {
+                ...state,
+                allUsers: state.allUsers,
+                userIsLoading: false,
+                isLogged: true,
+                numUsers: state.numUsers
+            }
+    
         default:
             return unloadedState;
     }

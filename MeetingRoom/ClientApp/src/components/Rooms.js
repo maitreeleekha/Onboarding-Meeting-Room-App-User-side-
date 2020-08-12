@@ -90,7 +90,7 @@ var Room = function (props) {
                 return;
             }
         }
-        window.open("/bookroom/user:53231/" + props.inputDate + "/" + fromTime + "-" + toTime + "/" + props.roomId + "/" + props.roomType + "/confirm", '_self');
+        props.history.push("/bookroom/user" + props.userid + "/" + props.inputDate + "/" + fromTime + "-" + toTime + "/" + props.roomId + "/" + props.roomType + "/confirm", '_self');
         //route to confirmation page where the user chooses a layout, additional equipment before finalizing the booking!
     };
     if (props.status == 'N') {
@@ -147,8 +147,10 @@ var Rooms = /** @class */ (function (_super) {
         var _this = _super.call(this, props) || this;
         _this.routeParam = '';
         _this.roomParam = '';
+        _this.userParam = '';
         _this.routeParam = props.match.params.date;
         _this.roomParam = props.match.params.room;
+        _this.userParam = props.match.params.user;
         return _this;
     }
     Rooms.prototype.componentDidMount = function () {
@@ -184,16 +186,20 @@ var Rooms = /** @class */ (function (_super) {
         if (today > this.routeParam) {
             // cannot search for past dates. route to error page
             //alert("Please enter a valid date to check available rooms.")
-            window.open('/index/user:52321', '_self');
+            window.open("/user" + this.userParam, '_self');
+            return (React.createElement(React.Fragment, null));
         }
-        if (this.roomParam && this.props.numRooms == 0) {
-            // the room was deleted from the database.
-            window.open('/notfound', '_self');
+        //VALIDATE USER ENTRY //// the room was deleted from the database.
+        if (!sessionStorage.getItem("userid") || sessionStorage.getItem("userid") != this.userParam.slice(1) || (this.roomParam && this.props.numRooms == 0)) {
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
+            window.open('./notfound', '_self');
+            return (React.createElement(React.Fragment, null));
         }
-        //VALIDATE USER ENTRY
         return (React.createElement(React.Fragment, null,
             React.createElement("h1", null, " Rooms  "),
-            this.props.rooms.map(function (room) { return React.createElement(Room, __assign({ key: room.roomId }, room, { inputDate: _this.routeParam, books: _this.props.bookings })); })));
+            this.props.rooms.map(function (room) { return React.createElement(Room, __assign({ key: room.roomId }, room, { inputDate: _this.routeParam, books: _this.props.bookings, history: _this.props.history, userid: _this.userParam })); })));
     };
     return Rooms;
 }(React.PureComponent));

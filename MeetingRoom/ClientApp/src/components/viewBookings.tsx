@@ -28,7 +28,7 @@ const BookingItem = (props) => {
 
     const handleBookSubmit = (event) => {
         event.preventDefault();
-        window.open(`/meetingrooms/user:53231/${dateInput}/${props.roomId}/`, '_self');
+        props.history.push(`/meetingrooms/user:53231/${dateInput}/${props.roomId}/`, '_self');
     }
         
     return (        
@@ -47,7 +47,7 @@ const BookingItem = (props) => {
                 event.preventDefault();
                 let editDecision = window.confirm("Are you sure you want to edit this booking?");
                 if (editDecision) {
-                    window.open(`/editbooking/${props.bookingId}`, '_self');
+                    props.history.push(`/editbooking/${props.bookingId}`, '_self');
                 }
 
             }}> Edit this booking </button>
@@ -98,18 +98,27 @@ class ViewBookings extends React.PureComponent<RoomBookingProps> {
     }
 
     public render() {
-        let userBookings = [{ bookingId: 'XHSDJ17H', bookingDate: '2020-08-01', meetingDate: '2020-08-17', meetingTime: '11:00-13:30', empId: '53231', roomId: 'ND-B1-A4-09', AdditionalEquipments: [], ActionRequired: '' },
-            { bookingId: 'XIUDU27N', bookingDate: '2020-08-03', meetingDate: '2020-09-08', meetingTime: '14:00-17:30', empId: '53231', roomId: 'HYD-B1-A5-16', AdditionalEquipments: ['Printer'], ActionRequired: '' },
 
-            { bookingId: 'JSDHD912', bookingDate: '2020-08-03', meetingDate: '2020-08-10', meetingTime: '14:00-17:30', empId: '53231', roomId: 'HYD-B1-A5-16', AdditionalEquipments: ['Printer'], ActionRequired: '' }
-        ]
+        console.log(this.userParam.slice(1), this.props.bookings.length);
 
+        if (this.userParam.slice(1) != sessionStorage.getItem("userid")) {
+            
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
+
+            window.open('./notfound', '_self');
+            return (
+                <>
+                </>
+            );
+        }
 
         return (
 
             <>
 
-                {this.props.bookings.map((booking) => <BookingItem key={booking.bookingId} {...booking} />)}
+                {this.props.bookings.map((booking) => <BookingItem key={booking.bookingId} {...booking} history={this.props.history} />)}
 
             </>
 

@@ -19,9 +19,9 @@ export const actionCreators = {
 
 //REDUCER
 
-export const reducer: Reducer<ShowDateFormState> = (state: ShowDateFormState | undefined, incomingAction: Action): ShowDateFormState => {
+export const reducer: Reducer<ShowDateFormState> = (state: any | undefined, incomingAction: Action)=> {
     if (state === undefined) {
-        return {
+        return {            
             dateFormState: false
         };
     }
@@ -29,7 +29,10 @@ export const reducer: Reducer<ShowDateFormState> = (state: ShowDateFormState | u
     const action = incomingAction as ShowDateFormAction;
     switch (action.type) {
         case 'SHOW_DATE_FORM':
-            return { dateFormState: true };
+            return {
+                ...state,
+                dateFormState: true
+            };
         default:
             return state;
     }

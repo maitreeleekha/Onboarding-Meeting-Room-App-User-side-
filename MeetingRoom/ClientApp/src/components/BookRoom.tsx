@@ -3,31 +3,13 @@ import { connect } from 'react-redux';
 import * as RoomsBookingsStore from '../store/Rooms';
 import { RouteComponentProps } from 'react-router';
 import { ApplicationState } from '../store';
+import './static/Room.css';
 
 type RoomBookingProps =
     RoomsBookingsStore.RoomsBookingsState
     & typeof RoomsBookingsStore.actionCreators
     & RouteComponentProps<{ user: string, date: string, room: string }>
 
-
-
-//const LayoutForm = (props) => {
-//  //  <input type="checkbox" id={item} name={item} value={item} />
-//  //      <label for={item}>{item}</label>
-//    console.log(props.options.length)
-//    return (
-//        <div className="container">
-//            Layout options
-
-//            {props.options.map((item) => {                
-//                <h2>
-//                    {item}
-//                </h2>               
-                
-//            })}                   
-//        </div>
-//        );
-//}
 
 const AdditionalReqForm = (props) => {
 
@@ -69,7 +51,9 @@ const AdditionalReqForm = (props) => {
 
 
 
-        window.open(`/bookingconfirmed/user:53231/${bookingid}/${props.room}/${props.date}/${props.time}/${final_layout}/${final_req}`, '_self');
+
+
+        props.history.push(`/bookingconfirmed/user${props.userid}/${bookingid}/${props.room}/${props.date}/${props.time}/${final_layout}/${final_req}`, '_self');
         
     }
 
@@ -78,13 +62,13 @@ const AdditionalReqForm = (props) => {
             <br />
             
             
-            <form className="form-group" onSubmit={handleSubmit}>
+            <form className="form-group additionalform" onSubmit={handleSubmit}>
                 Please specify the layout for the room, and we will get it all set for you! You can select one from the following options:<br/>
                 <h3>Layout options:</h3>
                 <br/>
                 {layoutOptions.map((item: string) =>
-                    <div>
-                        <input key={item} type="radio" id={item} name="layoutoption" value={item} checked />
+                    <div key={item}>
+                        <input type="radio" id={item} name="layoutoption" value={item} required />
                         <label> {item}</label>
                     </div>
                 )}
@@ -123,14 +107,15 @@ class BookRoom extends React.PureComponent<RoomBookingProps> {
     roomParam = '';
     timeParam = '';
     typeParam = '';
-    
+    userParam = '';
 
     constructor(props) {
         super(props);
         this.dateParam = props.match.params.date;
         this.roomParam = props.match.params.room;
         this.timeParam = props.match.params.time;
-        this.typeParam = props.match.params.type;       
+        this.typeParam = props.match.params.type;   
+        this.userParam = props.match.params.user;
     }
 
 
@@ -203,13 +188,16 @@ class BookRoom extends React.PureComponent<RoomBookingProps> {
         // VALIDATE INCOMING PARAMS
         if (today > this.dateParam) {
             // cannot search for past dates. route to error page
-            window.open('/index', '_self');
+            window.open('/index/user:52321', '_self');
+            //window.open('/index/user:52321', '_self');
         }
-
 
         if (this.checkDateFormat() &&
             this.checkTimeFormat() &&
             this.props.numRooms == 1 &&
+            this.props.rooms.length == 1 &&
+            this.props.rooms[0]["roomType"].localeCompare(this.typeParam) == 0 &&
+            this.userParam.slice(1) == sessionStorage.getItem("userid") &&
             this.props.bookings.filter(item => this.checkAlreadyBooked(item)).length == 0 &&
             this.props.numBookings != -1
         ) {
@@ -217,7 +205,7 @@ class BookRoom extends React.PureComponent<RoomBookingProps> {
                 <>
                     < h1 > Great News! </ h1 >
                     <h3> {this.roomParam} is available on {this.dateParam}, {this.timeParam}</h3>
-                    <AdditionalReqForm type={this.typeParam} room={this.roomParam} date={this.dateParam} time={this.timeParam} />
+                    <AdditionalReqForm type={this.typeParam} room={this.roomParam} date={this.dateParam} time={this.timeParam} history={this.props.history} userid={this.userParam} />
                 </>
             );
         }
@@ -230,6 +218,10 @@ class BookRoom extends React.PureComponent<RoomBookingProps> {
             );
         }
         else {
+            sessionStorage.removeItem("userid");
+            sessionStorage.removeItem("username");
+            sessionStorage.removeItem("loggedin");
+
             window.open('./notfound', '_self');
             return (
                 <>

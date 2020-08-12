@@ -1,9 +1,18 @@
 ﻿import * as React from 'react';
 import { connect } from 'react-redux';
+import * as RoomsBookingsStore from '../store/Rooms';
+import { RouteComponentProps } from 'react-router';
+import { ApplicationState } from '../store';
+import './static/Room.css';
+
+type RoomBookingProps =
+    RoomsBookingsStore.RoomsBookingsState
+    & typeof RoomsBookingsStore.actionCreators
+    & RouteComponentProps<{ user: string, date: string, room: string }>
 
 
 
-class ConfirmedBooking extends React.PureComponent {
+class ConfirmedBooking extends React.PureComponent<RoomBookingProps> {
     dateParam = '';
     roomParam = '';
     timeParam = '';
@@ -11,6 +20,7 @@ class ConfirmedBooking extends React.PureComponent {
     bookingid = '';
     finallayout = '';
     finalreq = '';
+    userParam = '';
 
 
     constructor(props) {
@@ -21,7 +31,8 @@ class ConfirmedBooking extends React.PureComponent {
         this.timeParam = props.match.params.time;
         this.typeParam = props.match.params.type;
         this.finallayout = props.match.params.layout;
-        this.finalreq = props.match.params.req;
+        this.userParam = props.match.params.user;
+        this.finalreq = props.match.params.req ? props.match.params.req : "-" ;
     }
 
     public render() {
@@ -32,8 +43,14 @@ class ConfirmedBooking extends React.PureComponent {
 
         if (today > this.dateParam) {
             // cannot search for past dates. route to error page
-            window.open('/index', '_self');
+            window.open('./', '_self');
         }
+
+        //This page is rendered after the post request of the booking has been completed. 
+        // Before rendering, confirm the that post request was a success by doing a get on the same. This 
+        // will also validate the qs params.
+
+
         return (
 
             <>
@@ -41,13 +58,20 @@ class ConfirmedBooking extends React.PureComponent {
                 <h2> Following are the details for your booking:</h2>
                 <br/>
                 <div className="container">
-                    <h4>Date: {this.dateParam} </h4>  
-                    <h4>Room: {this.roomParam} </h4>
-                <h4>Time: {this.timeParam} </h4>  
-            <h4>Layout: { this.finallayout } </h4 >   
-            <h4>Additional Requirements: { this.finalreq }</h4 > 
+                    <h4>Date: <span className="detailValue"> {this.dateParam} </span> </h4>  
+                    <h4>Room: <span className="detailValue">  {this.roomParam} </span> </h4>
+                    <h4>Time: <span className="detailValue">  {this.timeParam} </span></h4>  
+                    <h4>Layout: <span className="detailValue">  {this.finallayout} </span></h4 >   
+                    <h4>Additional Requirements: <span className="detailValue">  {this.finalreq}</span></h4 > 
                 </div>
 
+                <br />
+                <br/>
+                <button className="btn btn-primary btn-lg" onClick={(event) => {
+                    event.preventDefault();
+                    window.open(`./user${this.userParam}`, '_self');
+
+                }}>Home</button>
             </>
 
 
@@ -56,4 +80,7 @@ class ConfirmedBooking extends React.PureComponent {
 
 }
 
-export default connect()(ConfirmedBooking);
+export default connect(
+    (state: ApplicationState) => state.rooms,// Selects which state properties are merged into the component's props
+    RoomsBookingsStore.actionCreators // Selects which action creators are merged into the component's props
+)(ConfirmedBooking);

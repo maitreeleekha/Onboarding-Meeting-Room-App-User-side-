@@ -15,6 +15,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_redux_1 = require("react-redux");
+var RoomsBookingsStore = require("../store/Rooms");
+require("./static/Room.css");
 var ConfirmedBooking = /** @class */ (function (_super) {
     __extends(ConfirmedBooking, _super);
     function ConfirmedBooking(props) {
@@ -26,22 +28,28 @@ var ConfirmedBooking = /** @class */ (function (_super) {
         _this.bookingid = '';
         _this.finallayout = '';
         _this.finalreq = '';
+        _this.userParam = '';
         _this.dateParam = props.match.params.date;
         _this.roomParam = props.match.params.room;
         _this.timeParam = props.match.params.time;
         _this.typeParam = props.match.params.type;
         _this.finallayout = props.match.params.layout;
-        _this.finalreq = props.match.params.req;
+        _this.userParam = props.match.params.user;
+        _this.finalreq = props.match.params.req ? props.match.params.req : "-";
         return _this;
     }
     ConfirmedBooking.prototype.render = function () {
+        var _this = this;
         console.log(this.dateParam);
         var today = new Date().toISOString().slice(0, 10);
         // validate params
         if (today > this.dateParam) {
             // cannot search for past dates. route to error page
-            window.open('/index', '_self');
+            window.open('./', '_self');
         }
+        //This page is rendered after the post request of the booking has been completed. 
+        // Before rendering, confirm the that post request was a success by doing a get on the same. This 
+        // will also validate the qs params.
         return (React.createElement(React.Fragment, null,
             React.createElement("h1", null, " Thank you for booking with us! "),
             React.createElement("h2", null, " Following are the details for your booking:"),
@@ -49,25 +57,45 @@ var ConfirmedBooking = /** @class */ (function (_super) {
             React.createElement("div", { className: "container" },
                 React.createElement("h4", null,
                     "Date: ",
-                    this.dateParam,
+                    React.createElement("span", { className: "detailValue" },
+                        " ",
+                        this.dateParam,
+                        " "),
                     " "),
                 React.createElement("h4", null,
                     "Room: ",
-                    this.roomParam,
+                    React.createElement("span", { className: "detailValue" },
+                        "  ",
+                        this.roomParam,
+                        " "),
                     " "),
                 React.createElement("h4", null,
                     "Time: ",
-                    this.timeParam,
-                    " "),
+                    React.createElement("span", { className: "detailValue" },
+                        "  ",
+                        this.timeParam,
+                        " ")),
                 React.createElement("h4", null,
                     "Layout: ",
-                    this.finallayout,
-                    " "),
+                    React.createElement("span", { className: "detailValue" },
+                        "  ",
+                        this.finallayout,
+                        " ")),
                 React.createElement("h4", null,
                     "Additional Requirements: ",
-                    this.finalreq))));
+                    React.createElement("span", { className: "detailValue" },
+                        "  ",
+                        this.finalreq))),
+            React.createElement("br", null),
+            React.createElement("br", null),
+            React.createElement("button", { className: "btn btn-primary btn-lg", onClick: function (event) {
+                    event.preventDefault();
+                    window.open("./user" + _this.userParam, '_self');
+                } }, "Home")));
     };
     return ConfirmedBooking;
 }(React.PureComponent));
-exports.default = react_redux_1.connect()(ConfirmedBooking);
+exports.default = react_redux_1.connect(function (state) { return state.rooms; }, // Selects which state properties are merged into the component's props
+RoomsBookingsStore.actionCreators // Selects which action creators are merged into the component's props
+)(ConfirmedBooking);
 //# sourceMappingURL=ConfirmedBooking.js.map

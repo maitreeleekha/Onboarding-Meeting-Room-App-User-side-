@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 
 
 
-class NotFound extends React.PureComponent {
+const NotFound = (props)=>{
    
 
-    public render() {
+    
 
         return (
 
@@ -25,6 +25,6 @@ class NotFound extends React.PureComponent {
         );
     }
 
-}
+
 
 export default connect()(NotFound);
