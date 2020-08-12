@@ -1,0 +1,97 @@
+﻿.roomDiv {
+    margin: 5%;
+    overflow: auto;
+    background-color: rgba(179, 179, 179, 0.151);
+    border-radius: 5px;
+    padding: 3%;
+    box-shadow: lightgrey 3px 3px;
+}
+
+.roomImage {
+    height: 100%;
+    min-height: 75px;
+    width: 15vh;
+    min-width: 75px;
+    float: left;
+    margin-right: 5%;
+    margin-bottom: 1%;
+}
+
+.roomName{
+    margin-left: 5%;
+    font-size: 1.3em;
+}
+
+.roomDesc {
+    margin-left: 5%;
+    color:grey;
+}
+
+.bookRoom{
+    margin:1%;
+}
+
+.timeLabel{
+    margin: 1%;
+}
+
+.timeInput{
+    margin: 1%;
+}
+
+.roomInfoDiv{
+    overflow:auto;
+}
+
+.labelWarning {
+    background-color: darksalmon;
+    color: white;
+    padding: 1%;
+    margin: 1%;
+    border-radius: 2px;
+}
+
+.booking-button{
+    margin:1%;
+    float:left
+}
+
+.rebookform button, .rebookform input, .rebookform label {
+    margin: 1%;
+}
+
+.edit-form button, .edit-form input, .edit-form label, .signup-body input {
+    margin: 1%;
+}
+
+.edit-form input{
+    height: 40vh;
+    line-height:1em;
+}
+
+@media screen and (min-width:768px) {
+    .roomDiv {
+        border-radius: 10px;
+        padding: 1%;
+        box-shadow: lightgrey 5px 5px;
+    }
+
+    .edit-form{
+        width: 75%;
+        margin: 0px auto;
+    }
+
+    .roomImage {
+        height: 100%;
+        width: 20vh;
+        float: left;
+        margin-right: 3%;
+    }
+
+    .login-body, .signup-body{
+        width: 60%;
+        margin:0px auto;
+    }
+
+
+}
