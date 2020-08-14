@@ -1,9 +1,17 @@
 ﻿import * as React from 'react';
 import { connect } from 'react-redux';
+import * as RoomsBookingsStore from '../store/Rooms';
+import { RouteComponentProps } from 'react-router';
+import { ApplicationState } from '../store';
 
 
+type RoomBookingProps =
+    RoomsBookingsStore.RoomsBookingsState
+    & typeof RoomsBookingsStore.actionCreators
+    & RouteComponentProps<{ user: string, bookingid: string}> 
 
-class EditBooking extends React.PureComponent {
+
+class EditBooking extends React.PureComponent<RoomBookingProps>  {
 
 
     //validate incoming URL.
@@ -19,10 +27,9 @@ class EditBooking extends React.PureComponent {
         event.preventDefault();
         // initiate a post request
 
+        this.props.putActionRequired(this.props.match.params.bookingid, event.target[0].value);
+        
 
-
-        alert("Your request has been submitted successfully. We shall reach out to you with an update shortly.");
-        // window.open(`./`, '_self');
 
     }
 
@@ -50,4 +57,7 @@ class EditBooking extends React.PureComponent {
 
 }
 
-export default connect()(EditBooking);
+export default connect(
+    (state: ApplicationState) => state.rooms,// Selects which state properties are merged into the component's props
+    RoomsBookingsStore.actionCreators // Selects which action creators are merged into the component's props
+)(EditBooking);

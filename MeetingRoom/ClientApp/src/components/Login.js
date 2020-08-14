@@ -27,28 +27,29 @@ var Login = /** @class */ (function (_super) {
             //console.log(event.target[0].value);
             //this.props.requestUser(event.target[0].value);
             //.then(() => console.log('logger', this.props.loginuser));
-            if (_this.props.numUsers == -1) {
-                //wait
-            }
-            else if (_this.props.allUsers.filter(function (item) { return item.userId == event.target[0].value; }).length == 0) {
-                //user not registered!
-                alert("Looks like you haven't registered with us yet!");
-                _this.props.history.push('./signup');
-            }
-            else if (_this.props.allUsers.filter(function (item) { return item.userId == event.target[0].value; }).length == 1) {
-                console.log('LoggedIn Successfullyy');
-                //this.props.setLoggedIn();
-                console.log(_this.props);
-                sessionStorage.setItem("loggedin", "true");
-                sessionStorage.setItem("userid", event.target[0].value);
-                sessionStorage.setItem("username", _this.props.allUsers.filter(function (item) { return item.userId == event.target[0].value; })[0].userName);
-                _this.props.history.push("./user:" + event.target[0].value);
-            }
+            _this.props.requestUser_Login(event.target[0].value, event.target[1].value);
+            //if (this.props.numUsers == -1) {
+            //    //wait
+            //}
+            //else if (this.props.allUsers.filter(item => item.userId == event.target[0].value).length == 0) {
+            //    //user not registered!
+            //    alert("Looks like you haven't registered with us yet!")
+            //    this.props.history.push('./signup')
+            //}
+            //else if (this.props.allUsers.filter(item => item.userId == event.target[0].value &&  item.password == event.target[1].value).length == 1) {
+            //    console.log('LoggedIn Successfullyy');
+            //    //this.props.setLoggedIn();
+            //    console.log(this.props);
+            //    this.props.history.push(`./user:${event.target[0].value}`)
+            //}
+            //else if (this.props.allUsers.filter(item => item.userId == event.target[0].value &&   item.password != event.target[1].value).length == 1) {
+            //    alert("incorrect passowrd!");
+            //}
         };
         return _this;
     }
     Login.prototype.componentDidMount = function () {
-        this.props.requestUser("");
+        //this.props.requestUser("");
     };
     Login.prototype.render = function () {
         console.log('logger', this.props.allUsers, this.props.userIsLoading, this.props.isLogged);
@@ -59,6 +60,8 @@ var Login = /** @class */ (function (_super) {
                     React.createElement("h4", null, " Hi! Please Enter your username "),
                     React.createElement("form", { className: "form-group", onSubmit: this.handleSubmit },
                         React.createElement("input", { className: "form-control", placeholder: "UserID", required: true }),
+                        React.createElement("br", null),
+                        React.createElement("input", { type: "password", className: "form-control", placeholder: "Password", required: true }),
                         React.createElement("br", null),
                         React.createElement("button", { className: "btn-lg btn btn-primary", type: "submit" }, "Login")),
                     React.createElement("button", { className: "btn-lg btn btn-light", onClick: function (event) {

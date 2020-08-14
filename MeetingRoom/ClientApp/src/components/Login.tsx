@@ -27,7 +27,7 @@ class Login extends React.PureComponent<UserProps> {
     }
 
     public componentDidMount() {
-        this.props.requestUser("");
+        //this.props.requestUser("");
     }
 
     private handleSubmit = (event) => {
@@ -36,25 +36,29 @@ class Login extends React.PureComponent<UserProps> {
         //this.props.requestUser(event.target[0].value);
         //.then(() => console.log('logger', this.props.loginuser));
 
-        if (this.props.numUsers == -1) {
-            //wait
-        }
+        this.props.requestUser_Login(event.target[0].value, event.target[1].value);
 
-        else if (this.props.allUsers.filter(item => item.userId == event.target[0].value).length == 0) {
-            //user not registered!
-            alert("Looks like you haven't registered with us yet!")
-            this.props.history.push('./signup')
-        }
-        else if (this.props.allUsers.filter(item => item.userId == event.target[0].value).length == 1) {
-            console.log('LoggedIn Successfullyy');
-            //this.props.setLoggedIn();
-            console.log(this.props);
-            sessionStorage.setItem("loggedin", "true");
-            sessionStorage.setItem("userid", event.target[0].value);
-            sessionStorage.setItem("username", this.props.allUsers.filter(item => item.userId == event.target[0].value)[0].userName);
-            this.props.history.push(`./user:${event.target[0].value}`)
-            
-        }
+
+        //if (this.props.numUsers == -1) {
+        //    //wait
+        //}
+
+        //else if (this.props.allUsers.filter(item => item.userId == event.target[0].value).length == 0) {
+        //    //user not registered!
+        //    alert("Looks like you haven't registered with us yet!")
+        //    this.props.history.push('./signup')
+        //}
+        //else if (this.props.allUsers.filter(item => item.userId == event.target[0].value &&  item.password == event.target[1].value).length == 1) {
+        //    console.log('LoggedIn Successfullyy');
+        //    //this.props.setLoggedIn();
+        //    console.log(this.props);
+        //    this.props.history.push(`./user:${event.target[0].value}`)
+
+        //}
+
+        //else if (this.props.allUsers.filter(item => item.userId == event.target[0].value &&   item.password != event.target[1].value).length == 1) {
+        //    alert("incorrect passowrd!");
+        //}
 
     }
  
@@ -71,6 +75,8 @@ class Login extends React.PureComponent<UserProps> {
                         <h4> Hi! Please Enter your username </h4>
                         <form className="form-group" onSubmit={this.handleSubmit}>
                             <input className="form-control" placeholder="UserID" required />
+                            <br />
+                            <input type="password"  className="form-control" placeholder="Password" required />
                             <br />
                             <button className="btn-lg btn btn-primary" type="submit">Login</button>
 

@@ -13,6 +13,7 @@ export interface User {
     userId: string;
     userName: string;
     emailId: string;
+    password: string;
 }
 
 interface RequestUserAction {
@@ -30,12 +31,17 @@ interface SetLoggedInState {
     type: 'SET_USER_LOGIN_STATE';
 }
 
-type KnownAction = ReceiveUserAction | RequestUserAction | SetLoggedInState;
+interface PostNewUser {
+    type: 'POST_USER'
+}
+
+type KnownAction = ReceiveUserAction | RequestUserAction | SetLoggedInState | PostNewUser;
 
 const unloadedUser: User = {
     userId: '',
     userName: '',
-    emailId: ''
+    emailId: '',
+    password: ''
 
 }
 const unloadedState: UserState = {
@@ -68,6 +74,72 @@ export const actionCreators = {
         dispatch({ type: 'REQUEST_USER' })
         dispatch({ type: 'SET_USER_LOGIN_STATE' });
        // dispatch({ type: 'REQUEST_USER' })
+    },
+
+    requestUser_Login: (userloginid: string, passwordentered: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        fetch(`api/user?userid=${userloginid}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(response => response.json() as Promise<User[]>)
+            .then(data => {
+
+                console.log("[response message]", data.length);
+                if (data.length == 0) {
+                    alert("Incorrect UserId! Please signup if you haven't yet!");
+                    window.open('./login', '_self');
+                }
+                else if (passwordentered != data[0].password) {
+                    alert("Incorrect password!");
+                }
+
+                else {
+                    sessionStorage.setItem("loggedin", "true");
+                    sessionStorage.setItem("userid", userloginid);
+                    sessionStorage.setItem("username", data[0].userName);
+                    window.open(`./user:${userloginid}`, '_self');
+                }
+
+            });
+    },
+
+    postUser: (user: object): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+        fetch("api/user", {
+            method: 'POST',
+            body: JSON.stringify(user),
+            redirect: 'follow',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => {
+
+                console.log(response.status);
+                if (!response.ok) {
+                    throw new Error("HTTP status " + response.status);
+                }
+                else {
+                    return response.text();
+                }
+            })
+            .then(result => {
+                console.log(result);
+                if (result == "") {
+                    alert("looks like you were already signed up!")
+                }
+                else {
+                    alert("Signed in successfully. Please login to continue.")
+                     window.open('./login', '_self');
+
+                }
+                })
+            .catch(error => {
+                alert("Error occured! Please try again.");
+                //window.open("./signup", "_self")
+            });
+
     }
 }
 

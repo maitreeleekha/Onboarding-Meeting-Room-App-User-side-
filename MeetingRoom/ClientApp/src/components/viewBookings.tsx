@@ -40,7 +40,15 @@ const BookingItem = (props) => {
 
             </div>
 
-            <button className="btn btn-sm btn-danger booking-button" style={{ display: show? 'block' : 'none' }}> Cancel this booking </button>
+            <button className="btn btn-sm btn-danger booking-button" style={{ display: show ? 'block' : 'none' }} onClick={(event) => {
+                event.preventDefault();
+                let m = window.confirm("Are you sure you want to delete this booking? You will not be able to undo this change if you confirm. Click cancel if you don't want to cancel.");
+                if (m) {
+
+                    props.cancelBooking(props.bookingId);
+                }
+
+            }}> Cancel this booking </button>
 
 
             <button className="btn btn-sm btn-warning booking-button" style={{ display: show ? 'block' : 'none' }} onClick={(event) => {
@@ -118,7 +126,7 @@ class ViewBookings extends React.PureComponent<RoomBookingProps> {
 
             <>
 
-                {this.props.bookings.map((booking) => <BookingItem key={booking.bookingId} {...booking} history={this.props.history} />)}
+                {this.props.bookings.map((booking) => <BookingItem key={booking.bookingId} {...booking} history={this.props.history} cancelBooking={this.props.deleteBookingAction} />)}
 
             </>
 

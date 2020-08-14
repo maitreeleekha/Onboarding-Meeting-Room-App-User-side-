@@ -18,6 +18,31 @@ exports.actionCreators = {
             console.log("[request log data]", data);
         });
         dispatch({ type: 'REQUEST_BOOKINGS' });
+    }; },
+    postBooking: function (booking, successURL) { return function (dispatch, getState) {
+        console.log("Postbooking Called!");
+        fetch("api/booking", {
+            method: 'POST',
+            body: JSON.stringify(booking),
+            redirect: 'follow',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(function (response) {
+            console.log(response.status);
+            if (!response.ok) {
+                throw new Error("HTTP status " + response.status);
+            }
+            else {
+                return response.text();
+            }
+        })
+            .then(function (result) {
+            console.log(result);
+            window.open(successURL, '_self');
+        })
+            .catch(function (error) { alert("Error occured! Please try again."); window.open("./index"); });
     }; }
 };
 var unloadedState = { bookings: [], bisLoading: false };

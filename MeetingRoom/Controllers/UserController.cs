@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace MeetingRoom.Controllers
 {
@@ -11,24 +12,50 @@ namespace MeetingRoom.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private List<UserObject> _data;
+        
+        private readonly UserDb data;
+
+        public UserController(UserDb db)
+        {
+            this.data = db;
+        }
 
         public IEnumerable<UserObject> Get(string userid)
         {
-            UserObject u1 = new UserObject { userId = "53231", userName = "Maitree Leekha", emailId = "maitreeleekha@yahoo.in" };
-            UserObject u2 = new UserObject { userId = "67234", userName = "Amit Roy", emailId = "amit@gmail.com" };
-            UserObject u3 = new UserObject { userId = "64983", userName = "Mohit Kapoor", emailId = "mohit@gmail.com" };
-
-            List<UserObject> users = new List<UserObject> { u1, u2, u3 };
-            // 
             if (userid != null)
             {
-                IEnumerable<UserObject> ans = users.Where(item => item.userId == userid).ToList();
+                IEnumerable<UserObject> ans =  data.Users.ToList().Where(item => item.userId == userid) ;
                 return ans;
             }
 
-
-            return users;
+            return  data.Users.ToList();
         }
+
+        [HttpPost]
+        public string Post(Dictionary<string, string> newuser)
+        {
+
+            // add in try catch blocks
+            //check if the user is not already signed in!
+
+            if(data.Users.Where(item => item.userId == newuser["userId"]).ToList().Count != 1)
+            {
+                UserObject newUserObject = new UserObject { emailId = newuser["emailId"], userId = newuser["userId"], userName = newuser["userName"], password = newuser["password"] };
+
+                data.Add(newUserObject);
+                data.SaveChanges();
+                
+                return newUserObject.userId;
+
+            }
+
+            return ""; 
+                //new UserObject { emailId = "", userId = "", userName = "", password = ""};
+
+
+        }
+
     }
 
 }

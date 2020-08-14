@@ -77,8 +77,6 @@ class MeetingHome extends React.PureComponent<CustomProps>
     public render() {
         console.log(this.userParam, sessionStorage.getItem("userid"));
         if (this.userParam) {
-
-
             if (this.userid.slice(1) == sessionStorage.getItem("userid")) {
                 return (
                     <>
@@ -123,6 +121,13 @@ class MeetingHome extends React.PureComponent<CustomProps>
 
     else{
 
+            if (sessionStorage.getItem("userid")) {
+                this.props.history.push(`./index/user${sessionStorage.getItem("userid")}`);
+                return (
+                    <>
+                    </>
+                    )
+            }
 
     return (
         <>

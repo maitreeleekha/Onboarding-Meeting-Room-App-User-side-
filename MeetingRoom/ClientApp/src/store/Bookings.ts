@@ -33,7 +33,11 @@ interface ReceiveBookingAction {
     bookings: Booking[];
 }
 
-type KnownAction = ReceiveBookingAction | RequestBookingAction;
+interface PostBookingAction {
+    type: 'POST_BOOKINGS';
+}
+
+type KnownAction = ReceiveBookingAction | RequestBookingAction | PostBookingAction;
 
 
 //ACTION CREATORS
@@ -57,6 +61,36 @@ export const actionCreators = {
             });
         
         dispatch({ type: 'REQUEST_BOOKINGS' });
+    },
+
+    postBooking: (booking :object, successURL: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+        console.log("Postbooking Called!");
+
+        fetch("api/booking", {
+            method: 'POST',
+            body: JSON.stringify(booking),
+            redirect: 'follow',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => {
+
+                console.log(response.status);
+                if (!response.ok) {
+                    throw new Error("HTTP status " + response.status);
+                }
+                else {
+                    return response.text()
+                }
+            })
+            .then(result => {
+                console.log(result);
+                window.open(successURL, '_self');
+            })
+            .catch(error => { alert("Error occured! Please try again."); window.open("./index") });
+
     }
 };
 

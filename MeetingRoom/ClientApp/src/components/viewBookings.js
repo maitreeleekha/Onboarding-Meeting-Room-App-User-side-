@@ -56,7 +56,13 @@ var BookingItem = function (props) {
                 ", ",
                 props.meetingTime,
                 " ")),
-        React.createElement("button", { className: "btn btn-sm btn-danger booking-button", style: { display: show ? 'block' : 'none' } }, " Cancel this booking "),
+        React.createElement("button", { className: "btn btn-sm btn-danger booking-button", style: { display: show ? 'block' : 'none' }, onClick: function (event) {
+                event.preventDefault();
+                var m = window.confirm("Are you sure you want to delete this booking? You will not be able to undo this change if you confirm. Click cancel if you don't want to cancel.");
+                if (m) {
+                    props.cancelBooking(props.bookingId);
+                }
+            } }, " Cancel this booking "),
         React.createElement("button", { className: "btn btn-sm btn-warning booking-button", style: { display: show ? 'block' : 'none' }, onClick: function (event) {
                 event.preventDefault();
                 var editDecision = window.confirm("Are you sure you want to edit this booking?");
@@ -95,7 +101,7 @@ var ViewBookings = /** @class */ (function (_super) {
             window.open('./notfound', '_self');
             return (React.createElement(React.Fragment, null));
         }
-        return (React.createElement(React.Fragment, null, this.props.bookings.map(function (booking) { return React.createElement(BookingItem, __assign({ key: booking.bookingId }, booking, { history: _this.props.history })); })));
+        return (React.createElement(React.Fragment, null, this.props.bookings.map(function (booking) { return React.createElement(BookingItem, __assign({ key: booking.bookingId }, booking, { history: _this.props.history, cancelBooking: _this.props.deleteBookingAction })); })));
     };
     return ViewBookings;
 }(React.PureComponent));

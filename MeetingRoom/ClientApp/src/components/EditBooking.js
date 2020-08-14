@@ -15,6 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_redux_1 = require("react-redux");
+var RoomsBookingsStore = require("../store/Rooms");
 var EditBooking = /** @class */ (function (_super) {
     __extends(EditBooking, _super);
     function EditBooking(props) {
@@ -24,8 +25,7 @@ var EditBooking = /** @class */ (function (_super) {
         _this.handleSubmit = function (event) {
             event.preventDefault();
             // initiate a post request
-            alert("Your request has been submitted successfully. We shall reach out to you with an update shortly.");
-            // window.open(`./`, '_self');
+            _this.props.putActionRequired(_this.props.match.params.bookingid, event.target[0].value);
         };
         _this.bookingId = props.match.params.bookingid;
         return _this;
@@ -42,5 +42,7 @@ var EditBooking = /** @class */ (function (_super) {
     };
     return EditBooking;
 }(React.PureComponent));
-exports.default = react_redux_1.connect()(EditBooking);
+exports.default = react_redux_1.connect(function (state) { return state.rooms; }, // Selects which state properties are merged into the component's props
+RoomsBookingsStore.actionCreators // Selects which action creators are merged into the component's props
+)(EditBooking);
 //# sourceMappingURL=EditBooking.js.map

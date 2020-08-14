@@ -45,7 +45,21 @@ var AdditionalReqForm = function (props) {
         // booking id:
         var bookingid = props.date.split('-').join('') + props.time.split('-').join('').split(':').join('');
         //create post request here!
-        props.history.push("/bookingconfirmed/user" + props.userid + "/" + bookingid + "/" + props.room + "/" + props.date + "/" + props.time + "/" + final_layout + "/" + final_req, '_self');
+        var today = new Date().toISOString().slice(0, 10);
+        var postBooking = "/bookingconfirmed/user" + props.userid + "/" + bookingid + "/" + props.room + "/" + props.date + "/" + props.time + "/" + final_layout + "/" + final_req;
+        var bookingArgs = {
+            "bookingId": bookingid,
+            "roomId": props.room,
+            "bookingDate": today,
+            "meetingDate": props.date,
+            "meetingTime": props.time,
+            "employeeId": props.userid.slice(1),
+            "actionRequired": "",
+            "equip": final_req,
+            "layoutRequired": final_layout
+        };
+        //props.history.push(`/bookingconfirmed/user${props.userid}/${bookingid}/${props.room}/${props.date}/${props.time}/${final_layout}/${final_req}`, '_self');
+        props.postURL(bookingArgs, postBooking);
     };
     return (React.createElement(React.Fragment, null,
         React.createElement("br", null),
@@ -149,7 +163,7 @@ var BookRoom = /** @class */ (function (_super) {
         // VALIDATE INCOMING PARAMS
         if (today > this.dateParam) {
             // cannot search for past dates. route to error page
-            window.open('/index/user:52321', '_self');
+            window.open("/index/user" + this.userParam, '_self');
             //window.open('/index/user:52321', '_self');
         }
         if (this.checkDateFormat() &&
@@ -169,9 +183,9 @@ var BookRoom = /** @class */ (function (_super) {
                     this.dateParam,
                     ", ",
                     this.timeParam),
-                React.createElement(AdditionalReqForm, { type: this.typeParam, room: this.roomParam, date: this.dateParam, time: this.timeParam, history: this.props.history, userid: this.userParam })));
+                React.createElement(AdditionalReqForm, { type: this.typeParam, room: this.roomParam, date: this.dateParam, time: this.timeParam, history: this.props.history, userid: this.userParam, postURL: this.props.postBooking })));
         }
-        else if (this.props.numBookings == -1) {
+        else if (this.props.numBookings == -1 || this.props.numRooms == -1) {
             return (React.createElement(React.Fragment, null, "Loading..."));
         }
         else {

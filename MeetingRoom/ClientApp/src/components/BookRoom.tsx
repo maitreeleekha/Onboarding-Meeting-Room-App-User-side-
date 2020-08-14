@@ -48,13 +48,23 @@ const AdditionalReqForm = (props) => {
 
 
         //create post request here!
+        let today = new Date().toISOString().slice(0, 10);
+        let postBooking = `/bookingconfirmed/user${props.userid}/${bookingid}/${props.room}/${props.date}/${props.time}/${final_layout}/${final_req}`;
+        let bookingArgs = {
+            "bookingId": bookingid,
+            "roomId": props.room,
+            "bookingDate": today,
+            "meetingDate": props.date,
+            "meetingTime": props.time,
+            "employeeId": props.userid.slice(1),
+            "actionRequired": "",
+            "equip": final_req,
+            "layoutRequired": final_layout
+        }
 
+        //props.history.push(`/bookingconfirmed/user${props.userid}/${bookingid}/${props.room}/${props.date}/${props.time}/${final_layout}/${final_req}`, '_self');
 
-
-
-
-        props.history.push(`/bookingconfirmed/user${props.userid}/${bookingid}/${props.room}/${props.date}/${props.time}/${final_layout}/${final_req}`, '_self');
-        
+        props.postURL(bookingArgs, postBooking);
     }
 
     return (
@@ -188,7 +198,7 @@ class BookRoom extends React.PureComponent<RoomBookingProps> {
         // VALIDATE INCOMING PARAMS
         if (today > this.dateParam) {
             // cannot search for past dates. route to error page
-            window.open('/index/user:52321', '_self');
+            window.open(`/index/user${this.userParam}`, '_self');
             //window.open('/index/user:52321', '_self');
         }
 
@@ -205,12 +215,12 @@ class BookRoom extends React.PureComponent<RoomBookingProps> {
                 <>
                     < h1 > Great News! </ h1 >
                     <h3> {this.roomParam} is available on {this.dateParam}, {this.timeParam}</h3>
-                    <AdditionalReqForm type={this.typeParam} room={this.roomParam} date={this.dateParam} time={this.timeParam} history={this.props.history} userid={this.userParam} />
+                    <AdditionalReqForm type={this.typeParam} room={this.roomParam} date={this.dateParam} time={this.timeParam} history={this.props.history} userid={this.userParam} postURL={this.props.postBooking}/>
                 </>
             );
         }
 
-        else if (this.props.numBookings == -1) {
+        else if (this.props.numBookings == -1 || this.props.numRooms==-1 ) {
             return (
                 <>
                     Loading...
@@ -218,6 +228,7 @@ class BookRoom extends React.PureComponent<RoomBookingProps> {
             );
         }
         else {
+
             sessionStorage.removeItem("userid");
             sessionStorage.removeItem("username");
             sessionStorage.removeItem("loggedin");

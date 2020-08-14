@@ -123,6 +123,82 @@ export const actionCreators = {
     //    return false;
     //}
 
+
+    postBooking: (booking: object, successURL: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+        console.log("Postbooking Called!");
+
+        fetch("api/booking", {
+            method: 'POST',
+            body: JSON.stringify(booking),
+            redirect: 'follow',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => {
+
+                console.log(response.status);
+                if (!response.ok) {
+                    throw new Error("HTTP status " + response.status);
+                }
+                else {
+                    return response.text()
+                }
+            })
+            .then(result => {
+                console.log(result);
+                window.open(successURL, '_self');
+            })
+            .catch(error => { alert("Error occured! Please try again."); window.open("./index") });
+
+    },
+
+    putActionRequired: (bookingid: string, actionrqd: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        console.log("Putting action required!");
+
+        fetch(`api/booking?bookingid=${bookingid}&actionRequired=${actionrqd}`, {
+            method: 'PUT',
+            redirect: 'follow'
+        })
+            .then(response => response.text())
+            .then(result => {
+
+                console.log(result)
+                if (result == bookingid) {
+                    alert("Your request has been submitted successfully. We shall reach out to you with an update shortly.");
+                    window.open(`./index`, '_self');
+                }
+                else {
+                    alert("Sorry we could not process your request! please try again later!");
+                }
+            })
+            .catch(error => console.log('error', error));
+
+    },
+
+    deleteBookingAction: (bookingid: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+        fetch(`api/booking?bookingid=${bookingid}`, {
+            method: 'DELETE',
+            redirect: 'follow'
+        })
+            .then(response => response.text())
+            .then(result => {
+
+                console.log(result)
+                if (result == "1") {
+                    alert("Booking has been cancelled");
+                    window.open(`./user:${sessionStorage.getItem("userid")}`, '_self');
+                }
+                else {
+                    alert("Sorry we could not process your request! please try again later!");
+                }
+            })
+            .catch(error => console.log('error', error));
+
+    }
+
 };
 
 

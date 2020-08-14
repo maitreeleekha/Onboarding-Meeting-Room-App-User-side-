@@ -38,9 +38,12 @@ var ConfirmedBooking = /** @class */ (function (_super) {
         _this.finalreq = props.match.params.req ? props.match.params.req : "-";
         return _this;
     }
+    ConfirmedBooking.prototype.componentDidMount = function () {
+        this.props.requestBookings("");
+    };
     ConfirmedBooking.prototype.render = function () {
         var _this = this;
-        console.log(this.dateParam);
+        console.log(this.dateParam, this.props.bookings);
         var today = new Date().toISOString().slice(0, 10);
         // validate params
         if (today > this.dateParam) {

@@ -14,7 +14,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var unloadedUser = {
     userId: '',
     userName: '',
-    emailId: ''
+    emailId: '',
+    password: ''
 };
 var unloadedState = {
     allUsers: [], userIsLoading: false, isLogged: false, numUsers: -1
@@ -39,6 +40,63 @@ exports.actionCreators = {
         dispatch({ type: 'REQUEST_USER' });
         dispatch({ type: 'SET_USER_LOGIN_STATE' });
         // dispatch({ type: 'REQUEST_USER' })
+    }; },
+    requestUser_Login: function (userloginid, passwordentered) { return function (dispatch, getState) {
+        fetch("api/user?userid=" + userloginid, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(function (response) { return response.json(); })
+            .then(function (data) {
+            console.log("[response message]", data.length);
+            if (data.length == 0) {
+                alert("Incorrect UserId! Please signup if you haven't yet!");
+                window.open('./login', '_self');
+            }
+            else if (passwordentered != data[0].password) {
+                alert("Incorrect password!");
+            }
+            else {
+                sessionStorage.setItem("loggedin", "true");
+                sessionStorage.setItem("userid", userloginid);
+                sessionStorage.setItem("username", data[0].userName);
+                window.open("./user:" + userloginid, '_self');
+            }
+        });
+    }; },
+    postUser: function (user) { return function (dispatch, getState) {
+        fetch("api/user", {
+            method: 'POST',
+            body: JSON.stringify(user),
+            redirect: 'follow',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(function (response) {
+            console.log(response.status);
+            if (!response.ok) {
+                throw new Error("HTTP status " + response.status);
+            }
+            else {
+                return response.text();
+            }
+        })
+            .then(function (result) {
+            console.log(result);
+            if (result == "") {
+                alert("looks like you were already signed up!");
+            }
+            else {
+                alert("Signed in successfully. Please login to continue.");
+                window.open('./login', '_self');
+            }
+        })
+            .catch(function (error) {
+            alert("Error occured! Please try again.");
+            //window.open("./signup", "_self")
+        });
     }; }
 };
 exports.reducer = function (state, incomingAction) {

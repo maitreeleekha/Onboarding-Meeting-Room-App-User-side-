@@ -84,6 +84,10 @@ var MeetingHome = /** @class */ (function (_super) {
             }
         }
         else {
+            if (sessionStorage.getItem("userid")) {
+                this.props.history.push("./index/user" + sessionStorage.getItem("userid"));
+                return (React.createElement(React.Fragment, null));
+            }
             return (React.createElement(React.Fragment, null,
                 React.createElement("h1", null, "Welcome to the Meeting Room App!"),
                 React.createElement("div", null, "We help you book and manage your meetings effortlessly. To get started, you may choose to book a new meeting room, or can checkout your previous bookings to manage them."),

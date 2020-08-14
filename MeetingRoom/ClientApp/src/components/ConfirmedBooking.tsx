@@ -35,8 +35,12 @@ class ConfirmedBooking extends React.PureComponent<RoomBookingProps> {
         this.finalreq = props.match.params.req ? props.match.params.req : "-" ;
     }
 
+    public componentDidMount() {
+        this.props.requestBookings("");
+    }
+
     public render() {
-        console.log(this.dateParam);
+        console.log(this.dateParam, this.props.bookings);
         let today = new Date().toISOString().slice(0, 10);
 
         // validate params
